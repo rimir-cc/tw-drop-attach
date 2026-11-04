@@ -93,36 +93,63 @@ describe("drop-attach", function() {
 		});
 	});
 
-	describe("opening", function() {
+	describe("the shipped append action", function() {
 
-		it("counts PDFs as images in is[image] (TiddlyWiki core), so the docs warn", function() {
-			add({title: "K/b.pdf", type: "application/pdf"});
-			expect($tw.wiki.filterTiddlers("[[K/b.pdf]is[image]]")).toEqual(["K/b.pdf"]);
+		var ACTION = "$:/plugins/rimir/drop-attach/actions/append-view",
+			VIEW = "$:/plugins/rimir/derived-view",
+			view;
+
+		// without rimir/derived-view unless a spec adds it
+		beforeEach(function() {
+			view = $tw.wiki.getTiddler(VIEW);
+			$tw.wiki.deleteTiddler(VIEW);
 		});
 
-		it("never opens by default", function() {
-			add({title: "K/a.pdf", type: "application/pdf"});
-			expect(attach.opens($tw.wiki, "K/a.pdf")).toBe(false);
+		afterEach(function() {
+			if(view) {
+				$tw.wiki.addTiddler(view);
+			} else {
+				$tw.wiki.deleteTiddler(VIEW);
+			}
 		});
 
-		it("opens what the open filter keeps", function() {
-			add({title: CONFIG + "open-filter", text: "[all[]] :filter[get[type]prefix[image/]]"});
-			add({title: "K/a.png", type: "image/png"});
-			add({title: "K/a.pdf", type: "application/pdf"});
-			expect(attach.opens($tw.wiki, "K/a.png")).toBe(true);
-			expect(attach.opens($tw.wiki, "K/a.pdf")).toBe(false);
+		function run(target, newTitle) {
+			$tw.rootWidget.invokeActionString($tw.wiki.getTiddlerText(ACTION), $tw.rootWidget, null, {target: target, "new": newTitle});
+			return $tw.wiki.getTiddlerText(target);
+		}
+
+		it("appends a transclusion of the attachment after a blank line", function() {
+			add({title: "K", text: "Notes\n\n"});
+			expect(run("K", "K/a.pdf")).toBe('Notes\n\n<$transclude $tiddler="""K/a.pdf"""/>');
 		});
 
-		it("puts the new tiddlers right after the anchor, else at the end", function() {
-			expect(attach.insertAfter(["A", "K", "B"], "K", ["n1", "n2"])).toEqual(["A", "K", "n1", "n2", "B"]);
-			expect(attach.insertAfter(["A", "n1", "K"], "K", ["n1"])).toEqual(["A", "K", "n1"]);
-			expect(attach.insertAfter(["A"], null, ["n1"])).toEqual(["A", "n1"]);
+		it("appends one line per file and starts an empty tiddler with it", function() {
+			add({title: "K"});
+			run("K", "K/a.pdf");
+			expect(run("K", "K/b.png")).toBe('<$transclude $tiddler="""K/a.pdf"""/>\n\n<$transclude $tiddler="""K/b.png"""/>');
+		});
+
+		it("uses <<derived-view>> when rimir/derived-view is installed", function() {
+			add({title: "K", text: "x"});
+			$tw.wiki.addTiddler({title: VIEW, text: "{}"});
+			expect(run("K", "K/a.pdf")).toBe('x\n\n<<derived-view """K/a.pdf""">>');
+		});
+
+		it("leaves system tiddlers, non-wikitext targets and a switched-off setting alone", function() {
+			add({title: "$:/K", text: "x"});
+			expect(run("$:/K", "n")).toBe("x");
+			add({title: "img.png", type: "image/png", text: "iVBO"});
+			expect(run("img.png", "n")).toBe("iVBO");
+			add({title: "K", text: "x"});
+			add({title: CONFIG + "append", text: "no"});
+			expect(run("K", "n")).toBe("x");
 		});
 	});
 
 	describe("configuration", function() {
 
 		it("lists the action tiddlers, skipping empty ones", function() {
+			add({title: "$:/plugins/rimir/drop-attach/actions/append-view", tags: attach.ACTION_TAG, text: " "});
 			add({title: "$:/test/da/act", tags: attach.ACTION_TAG, text: "<$action-setfield $tiddler=<<new>> parent=<<target>>/>"});
 			add({title: "$:/test/da/empty", tags: attach.ACTION_TAG, text: " "});
 			expect(attach.actions($tw.wiki)).toEqual(["<$action-setfield $tiddler=<<new>> parent=<<target>>/>"]);

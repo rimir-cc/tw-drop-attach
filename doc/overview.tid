@@ -16,7 +16,7 @@ type: text/vnd.tiddlywiki
 
 !! What it does
 
-Drop a binary file (PDF, image, office document, archive, …) onto a tiddler in the story, or onto a stream row, and it becomes a tiddler right away: the file is stored in the wiki as base64, no `$:/Import` dialog, no server needed. What happens next is up to your wiki's configuration: link the new tiddler to the one you dropped on, give it fields, open it below the drop target.
+Drop a binary file (PDF, image, office document, archive, …) onto a tiddler in the story, or onto a stream row, and it becomes a tiddler right away: the file is stored in the wiki as base64, no `$:/Import` dialog, no server needed. A line that shows the attachment is appended to the end of the tiddler you dropped on: `<<derived-view …>>` (thumbnail, pages, text) when rimir/derived-view is installed, else a transclusion. It is ordinary text, so keep, move or delete it. Anything else is up to your wiki's configuration: link the new tiddler to the one you dropped on, give it fields.
 
 Pasting works too: click a tiddler to select it (a thin bar on its left edge marks it), then paste a file or a screenshot.
 

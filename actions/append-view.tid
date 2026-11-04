@@ -1,0 +1,22 @@
+title: $:/plugins/rimir/drop-attach/actions/append-view
+tags: $:/tags/rimir/drop-attach/action
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<!-- Shipped after-upload action: appends one line that shows the new
+     attachment to the end of the tiddler it was dropped on, so the drop target
+     shows its attachments without any list. With rimir/derived-view installed
+     the line is <<derived-view """<new>""">> (thumbnail, pages, text), else a
+     plain transclusion. The line is ordinary text: keep, move or delete it.
+     Off with $:/config/rimir/drop-attach/append = no. Skipped for system
+     tiddlers and for targets that are not wikitext (e.g. dropping onto an
+     image). -->
+<%if [<target>is[tiddler]!is[system]] :filter[get[type]else[text/vnd.tiddlywiki]match[text/vnd.tiddlywiki]] :filter[{$:/config/rimir/drop-attach/append}!match[no]then[yes]] %>
+<$let
+  call={{{ [[$:/plugins/rimir/derived-view]is[tiddler]then<new>addprefix[<<derived-view """]addsuffix[""">>]] ~[<new>addprefix[<$transclude $tiddler="""]addsuffix["""/>]] }}}
+  gap={{{ [charcode[10],[10]] }}}
+  text={{{ [<target>get[text]trim:suffix[]] [<call>] +[!is[blank]join<gap>] }}}
+>
+<$action-setfield $tiddler=<<target>> text=<<text>>/>
+</$let>
+<%endif%>

@@ -18,10 +18,11 @@ type: text/vnd.tiddlywiki
 
 |!Tiddler |!Role |
 |`layer.js` |The `<$drop-attach-layer>` widget, rendered once from `layer` (PageTemplate). Page-wide listeners in the capture phase: file drags over targets, drops, clicks (select), paste |
-|`attach.js` |Library: which files are attached (`typeOf`), the size limit, the new title (`titleFor`, `uniqueTitle`), the fields, whether it opens and where (`opens`, `insertAfter`), the action tiddlers, the target specs. No DOM, covered by the specs |
+|`attach.js` |Library: which files are attached (`typeOf`), the size limit, the new title (`titleFor`, `uniqueTitle`), the fields, the action tiddlers, the target specs. No DOM, covered by the specs |
 |`startup.js` |Registers the extra file types from the config as base64 types, in the browser and on the server |
 |`styles-target` |Stylesheet that marks the selected paste target, generated from the target specs |
 |`targets/*` |Drop target specs (story tiddler, stream row) |
+|`actions/append-view` |The shipped after-upload action: appends `<<derived-view …>>` (or a transclusion without rimir/derived-view) to the target's text; config `append` |
 |`templates/canonical-uri` |`_canonical_uri` for extracted files |
 
 !! Flow of a drop
@@ -32,7 +33,6 @@ drop                       ──► files split: binary → attach, text → co
                                too big → notice
 each binary file           ──► FileReader (base64) → tiddler {title, type, text, drop-attach.file}
                            ──► every action tiddler, with <target> <new> <filename> <type> <size> <source>
-all files                  ──► open filter → $:/StoryList: new tiddlers right after the story tiddler around the target
                            ──► one notice
 ```
 

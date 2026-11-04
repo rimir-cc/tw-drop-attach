@@ -7,7 +7,7 @@ Drop or paste binary files onto a TiddlyWiki tiddler. The file is stored in the 
 - **Drop onto a tiddler** — drag a binary file (PDF, image, office document, archive, …) onto a tiddler in the story or a stream row; it becomes a tiddler immediately — no `$:/Import` dialog, no server. Several files at once work too.
 - **Paste** — click a tiddler to select it (a thin bar on its left edge marks it), then paste a file or screenshot. Without a selected tiddler a notice asks you to select one.
 - **Your actions** — what happens after the upload — link to the drop target via `parent`, more fields, anything — are action tiddlers in your wiki, with `<target>`, `<new>`, `<filename>`, `<type>`, `<size>`, `<source>`. The plugin ships none.
-- **Open below the target** — an open filter decides which new tiddlers open in the story, right after the one you dropped on (default: none).
+- **Shown in the target** — a line showing the attachment is appended to the end of the tiddler you dropped on: `<<derived-view …>>` with rimir/derived-view (thumbnail, pages, extracted text), else a plain transclusion. Keep, move or delete it; switch it off in the settings.
 - **Only binaries** — text files (`.md`, `.json`, `.tid`, …) go to TiddlyWiki's normal import; dropping outside tiddlers behaves as before.
 - **Configurable** — title pattern, size limit (30 MB), pasted file names, extra file types, drop targets.
 - **Extract later** — a command line turns attachments into external files with `_canonical_uri`.
@@ -15,7 +15,7 @@ Drop or paste binary files onto a TiddlyWiki tiddler. The file is stored in the 
 ## Prerequisites
 
 - TiddlyWiki 5.4.0 or later
-- Optional: `sq/streams` (stream rows as drop targets), [rimir/doc-template](https://github.com/rimir-cc/tw-doc-template) (branded docs)
+- Optional: [rimir/derived-view](https://github.com/rimir-cc/tw-derived-view) (attachment cards and viewer, incl. TW Desk thumbnails and pages), `sq/streams` (stream rows as drop targets), [rimir/doc-template](https://github.com/rimir-cc/tw-doc-template) (branded docs)
 
 ## Quick Start
 

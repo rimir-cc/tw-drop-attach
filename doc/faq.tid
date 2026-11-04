@@ -14,9 +14,13 @@ type: text/vnd.tiddlywiki
 <$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
 <$fill $name="body">
 
+!! Q: A line like `<<derived-view …>>` appeared in the tiddler I dropped on.
+
+That is the shipped action showing the attachment where you dropped it. It is ordinary text: move it, delete it, or switch the action off in the settings (`$:/config/rimir/drop-attach/append` = `no`). Without rimir/derived-view the line is a plain transclusion.
+
 !! Q: Why is nothing linked after a drop?
 
-The plugin links nothing by itself. Add an action tiddler (see //Examples → Link the new tiddler to the drop target//).
+The plugin sets no field by itself (it only appends the line above). Add an action tiddler (see //Examples → Link the new tiddler to the drop target//).
 
 !! Q: I dropped a Markdown file and got the import dialog.
 

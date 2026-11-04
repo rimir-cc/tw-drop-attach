@@ -20,7 +20,7 @@ All are plain config tiddlers; edit them in the settings tab or override them in
 
 |!Tiddler |!Default |!Meaning |
 |`$:/config/rimir/drop-attach/title-filter` |`[<target>addsuffix[/]addsuffix<filename>]` |Title of the new tiddler; first result counts. Variables: `target`, `filename`, `type`, `source`, `size`. A taken title gets `-1`, `-2`, … before the extension |
-|`$:/config/rimir/drop-attach/open-filter` |(empty = never) |Runs on each new tiddler; those it keeps open in the story right after the story tiddler you dropped on (or that holds the stream row). `[all[]]` = always. Note: core `is[image]` also matches PDFs; for images only use `[all[]] :filter[get[type]prefix[image/]]` |
+|`$:/config/rimir/drop-attach/append` |`yes` |`no` switches off the shipped action that appends a line showing the attachment to the target's text (`<<derived-view """<new>""">>` with rimir/derived-view, else `<$transclude $tiddler="""<new>"""/>`). Skipped for system tiddlers and targets that are not wikitext |
 |`$:/config/rimir/drop-attach/max-size` |`30` |Size limit per file in MB. Bigger files are skipped with a notice |
 |`$:/config/rimir/drop-attach/paste-name` |`[<now YYYY0MM0DD-0hh0mm0ss>addprefix[pasted-]addsuffix[.]addsuffix<ext>]` |File name for pasted files without a real name (screenshots arrive as `image.png`). Variables: `ext`, `type` |
 |`$:/config/rimir/drop-attach/extra-types` |Outlook `.msg`, `.7z`, `.odt`, `.ods` |One `<mime type> <.extension>` per line, `#` = comment. Registered as base64 types at startup. ''Restart'' (reload; on a server, restart it) |
@@ -37,7 +37,7 @@ Tiddlers tagged <<tag "$:/tags/rimir/drop-attach/action">>, run in tag order onc
 |`size` |Size in bytes |
 |`source` |`drop` or `paste` |
 
-The plugin ships none.
+The plugin ships one, `$:/plugins/rimir/drop-attach/actions/append-view` (see `append` above). To replace it, override that tiddler; empty text switches it off.
 
 !! Drop targets
 

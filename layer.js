@@ -17,7 +17,7 @@ page-wide listeners of rimir/drop-attach:
   selected target if it is on screen; otherwise a notice says to select one
 * files that are no binary (text, JSON, .tid …) go to the normal import
 
-What a file becomes (type, title, fields, actions, opening) is in attach.js.
+What a file becomes (type, title, fields, actions) is in attach.js.
 
 \*/
 
@@ -28,8 +28,6 @@ var attach = require("$:/plugins/rimir/drop-attach/attach.js");
 
 var TARGET = "$:/temp/rimir/drop-attach/target",
 	NOTIFICATION = "$:/plugins/rimir/drop-attach/notification",
-	STORY = "$:/StoryList",
-	FRAME = ".tc-tiddler-frame[data-tiddler-title]",
 	GENERIC_PASTE_NAME = /^image\.\w+$/;
 
 var DropAttachLayerWidget = function(parseTreeNode, options) {
@@ -86,12 +84,6 @@ DropAttachLayerWidget.prototype.targetAt = function(el) {
 DropAttachLayerWidget.prototype.titleOf = function(el) {
 	var spec = attach.targetSpecs(this.wiki).filter(function(s) { return el.matches(s.selector); })[0];
 	return spec ? el.getAttribute(spec.attribute) : null;
-};
-
-// The story tiddler around a target: the new tiddler opens after it
-DropAttachLayerWidget.prototype.anchorOf = function(el) {
-	var frame = el.closest(FRAME);
-	return frame ? frame.getAttribute("data-tiddler-title") : null;
 };
 
 // A visible element that stands for `title`
@@ -157,7 +149,7 @@ DropAttachLayerWidget.prototype.onDrop = function(e) {
 	}
 	e.preventDefault();
 	e.stopPropagation();
-	this.attachFiles(e.dataTransfer.files, this.titleOf(target), this.anchorOf(target), "drop", e);
+	this.attachFiles(e.dataTransfer.files, this.titleOf(target), "drop", e);
 };
 
 // ---------- select and paste ----------
@@ -190,12 +182,12 @@ DropAttachLayerWidget.prototype.onPaste = function(e) {
 		this.notify("Nothing to paste into yet: click a tiddler to select it, then paste again.");
 		return;
 	}
-	this.attachFiles(files, title, this.anchorOf(el), "paste", e);
+	this.attachFiles(files, title, "paste", e);
 };
 
 // ---------- attaching ----------
 
-DropAttachLayerWidget.prototype.attachFiles = function(fileList, target, anchor, source, event) {
+DropAttachLayerWidget.prototype.attachFiles = function(fileList, target, source, event) {
 	var self = this,
 		wiki = this.wiki,
 		max = attach.maxBytes(wiki),
@@ -229,14 +221,14 @@ DropAttachLayerWidget.prototype.attachFiles = function(fileList, target, anchor,
 		reader.onload = function() {
 			item.base64 = String(reader.result).split(",")[1] || "";
 			if(--pending === 0) {
-				self.create(binary, target, anchor, source, event, messages);
+				self.create(binary, target, source, event, messages);
 			}
 		};
 		reader.onerror = function() {
 			item.failed = true;
 			messages.push(item.file.name + " could not be read.");
 			if(--pending === 0) {
-				self.create(binary, target, anchor, source, event, messages);
+				self.create(binary, target, source, event, messages);
 			}
 		};
 		reader.readAsDataURL(item.file);
@@ -244,7 +236,7 @@ DropAttachLayerWidget.prototype.attachFiles = function(fileList, target, anchor,
 };
 
 // One tiddler per file, in drop order, then the after-upload actions
-DropAttachLayerWidget.prototype.create = function(items, target, anchor, source, event, messages) {
+DropAttachLayerWidget.prototype.create = function(items, target, source, event, messages) {
 	var self = this,
 		wiki = this.wiki,
 		actions = attach.actions(wiki),
@@ -261,11 +253,6 @@ DropAttachLayerWidget.prototype.create = function(items, target, anchor, source,
 		});
 		created.push({title: title, filename: filename});
 	});
-	var opening = created.map(function(c) { return c.title; }).filter(function(title) { return attach.opens(wiki, title); });
-	if(opening.length) {
-		wiki.addTiddler(new $tw.Tiddler(wiki.getTiddler(STORY), {title: STORY,
-			list: attach.insertAfter(wiki.getTiddlerList(STORY), anchor, opening)}));
-	}
 	if(created.length) {
 		messages.unshift("Attached " + created.map(function(c) { return c.filename; }).join(", ") + " to " + this.captionOf(target) + ".");
 	}

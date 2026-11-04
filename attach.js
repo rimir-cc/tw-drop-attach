@@ -4,8 +4,8 @@ type: application/javascript
 module-type: library
 
 What a dropped or pasted file becomes, apart from the browser event handling in
-layer.js: which files are attached, the new tiddler's title and fields, where it
-opens. Everything configurable is read from the config tiddlers here.
+layer.js: which files are attached, the new tiddler's title and fields, the
+after-upload actions. Everything configurable is read from the config tiddlers here.
 
 \*/
 
@@ -89,20 +89,6 @@ exports.fields = function(wiki, title, type, base64, filename) {
 	var fields = {title: title, type: type, text: base64};
 	fields[FILE_FIELD] = filename;
 	return $tw.utils.extend({}, wiki.getCreationFields(), fields, wiki.getModificationFields());
-};
-
-// Whether the new tiddler opens in the story (the open filter keeps it)
-exports.opens = function(wiki, title) {
-	var filter = config(wiki, "open-filter", "");
-	return !!filter && wiki.filterTiddlers(filter, null, wiki.makeTiddlerIterator([title])).length > 0;
-};
-
-// The story list with `titles` moved right after `anchor` (at the end without it)
-exports.insertAfter = function(list, anchor, titles) {
-	var rest = list.filter(function(t) { return titles.indexOf(t) === -1; }),
-		at = rest.indexOf(anchor);
-	at = at === -1 ? rest.length : at + 1;
-	return rest.slice(0, at).concat(titles, rest.slice(at));
 };
 
 // The after-upload action tiddlers, in tag order

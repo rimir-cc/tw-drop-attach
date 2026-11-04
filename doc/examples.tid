@@ -45,15 +45,15 @@ tags: $:/tags/rimir/drop-attach/action
 <$action-listops $tiddler=<<target>> $field="attachments" $subfilter="[<new>]"/>
 ```
 
-!! Open images below the drop target, keep PDFs closed
+!! Show attachments at a fixed place in the target
 
-`$:/config/rimir/drop-attach/open-filter`:
+The shipped action appends `<<derived-view """<title>""">>` at the end of the tiddler you drop on. To show them somewhere else, switch it off (`$:/config/rimir/drop-attach/append` = `no`), link with `parent` (example above) and list them where you like, e.g. full views of all attached files:
 
 ```
-[all[]] :filter[get[type]prefix[image/]]
+<$list filter="[parent<currentTiddler>is[binary]]">
+<$transclude $variable="derived-view" tiddler=<<currentTiddler>> mode="full"/>
+</$list>
 ```
-
-(Core `is[image]` would also match PDFs.)
 
 !! Keep attachments in one folder per day
 
