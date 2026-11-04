@@ -1,0 +1,8 @@
+title: $:/config/rimir/drop-attach/extra-types
+
+# One file type per line: <mime type> <.extension>
+# Attached under that type instead of application/octet-stream. Restart needed.
+application/vnd.ms-outlook .msg
+application/x-7z-compressed .7z
+application/vnd.oasis.opendocument.text .odt
+application/vnd.oasis.opendocument.spreadsheet .ods

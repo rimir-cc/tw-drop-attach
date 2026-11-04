@@ -1,0 +1,9 @@
+title: $:/plugins/rimir/drop-attach/templates/canonical-uri
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<!-- _canonical_uri of an extracted file (see the extraction recipe in the docs).
+     Double-encoded like the core external-image template: --save writes the
+     file as files/<encodeuricomponent title>, and the browser decodes the URI
+     once before looking for that file name. -->
+files/<$view field="title" format="doubleurlencoded"/>

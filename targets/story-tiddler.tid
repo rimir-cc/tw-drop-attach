@@ -1,0 +1,6 @@
+title: $:/plugins/rimir/drop-attach/targets/story-tiddler
+tags: $:/tags/rimir/drop-attach/target
+selector: .tc-tiddler-frame.tc-tiddler-view-frame[data-tiddler-title]
+title-attribute: data-tiddler-title
+
+Tiddlers in the story river (view mode; a tiddler being edited is no target).

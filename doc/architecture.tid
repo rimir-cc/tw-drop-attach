@@ -1,0 +1,52 @@
+created: 20261104090000000
+modified: 20261104090000000
+rdt.hub-category: tools
+rdt.hub-category-name: Tools
+rdt.hub-order: 4
+rdt.order: 2
+rdt.plugin-key: drop-attach
+rdt.plugin-name: drop attach
+rdt.plugin-subtitle: Drop or paste binary files onto a tiddler
+rdt.section: Architecture
+title: $:/plugins/rimir/drop-attach/doc/architecture
+type: text/vnd.tiddlywiki
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! Pieces
+
+|!Tiddler |!Role |
+|`layer.js` |The `<$drop-attach-layer>` widget, rendered once from `layer` (PageTemplate). Page-wide listeners in the capture phase: file drags over targets, drops, clicks (select), paste |
+|`attach.js` |Library: which files are attached (`typeOf`), the size limit, the new title (`titleFor`, `uniqueTitle`), the fields, whether it opens and where (`opens`, `insertAfter`), the action tiddlers, the target specs. No DOM, covered by the specs |
+|`startup.js` |Registers the extra file types from the config as base64 types, in the browser and on the server |
+|`styles-target` |Stylesheet that marks the selected paste target, generated from the target specs |
+|`targets/*` |Drop target specs (story tiddler, stream row) |
+|`templates/canonical-uri` |`_canonical_uri` for extracted files |
+
+!! Flow of a drop
+
+```
+file dragged over a target ──► target gets da-dragover; event stopped (no core overlay)
+drop                       ──► files split: binary → attach, text → core import (tm-import-tiddlers)
+                               too big → notice
+each binary file           ──► FileReader (base64) → tiddler {title, type, text, drop-attach.file}
+                           ──► every action tiddler, with <target> <new> <filename> <type> <size> <source>
+all files                  ──► open filter → $:/StoryList: new tiddlers right after the story tiddler around the target
+                           ──► one notice
+```
+
+!! Why the capture phase
+
+TiddlyWiki's page template is one big `$dropzone`: it highlights on `dragenter` and opens `$:/Import` on `drop`. The layer listens on the document in the capture phase and stops the drag events (`dragenter`, `dragover`, `dragleave`, `drop`) when they happen inside a target, so they never reach the page dropzone. Outside targets nothing is stopped and the core behaves as usual. Only drags that carry files are looked at: tiddler drags (links, ports, the story) are untouched.
+
+!! Paste and the selected target
+
+A click inside a target writes its title to `$:/temp/rimir/drop-attach/target` (a temp tiddler: not saved, gone after a reload). `styles-target` renders one CSS rule from it, `<selector>[<title-attribute>="<title>"]` per target spec, drawing a 3px bar as a background image (no pseudo-element, no positioning, so it works on any target element). A paste is handled when the clipboard holds files and the paste does not happen in a text editor (textarea or contenteditable; TiddlyWiki's editor imports pasted files itself). A one-line input such as the sidebar search, which has focus after loading, does not count as an editor. The selected target must be visible on the page; otherwise the notice asks to select one.
+
+!! Types
+
+`typeOf` takes the file's MIME type, else the one for its extension. A type TiddlyWiki knows is attached if TiddlyWiki stores it as base64 (`$tw.config.contentTypeInfo[type].encoding`), else it goes to the import. A type TiddlyWiki does not know is attached as `application/octet-stream`, unless it is a `text/…` type. The extra types are registered at startup with `$tw.utils.registerFileType(type, "base64", extension)`, so they are attached under their own type and a Node server saves them with their own extension.
+
+</$fill>
+</$transclude>

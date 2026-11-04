@@ -1,0 +1,6 @@
+title: $:/plugins/rimir/drop-attach/targets/stream-row
+tags: $:/tags/rimir/drop-attach/target
+selector: .stream-row[data-node-title]
+title-attribute: data-node-title
+
+Rows of sq/streams. Matches nothing when streams is not installed.

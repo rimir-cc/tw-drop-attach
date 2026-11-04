@@ -1,0 +1,67 @@
+created: 20261104090000000
+modified: 20261104090000000
+rdt.hub-category: tools
+rdt.hub-category-name: Tools
+rdt.hub-order: 4
+rdt.order: 4
+rdt.plugin-key: drop-attach
+rdt.plugin-name: drop attach
+rdt.plugin-subtitle: Drop or paste binary files onto a tiddler
+rdt.section: Examples
+title: $:/plugins/rimir/drop-attach/doc/examples
+type: text/vnd.tiddlywiki
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! Link the new tiddler to the drop target
+
+The usual setup: the new tiddler's `parent` field names the tiddler you dropped on. Create this tiddler in your wiki:
+
+```
+title: $:/config/rimir/drop-attach/actions/link-parent
+tags: $:/tags/rimir/drop-attach/action
+
+<$action-setfield $tiddler=<<new>> parent=<<target>>/>
+```
+
+Any field works the same way, e.g. `attachment-of=<<target>>`.
+
+!! Add more fields
+
+```
+title: $:/config/rimir/drop-attach/actions/fields
+tags: $:/tags/rimir/drop-attach/action
+
+<$action-setfield $tiddler=<<new>> caption=<<filename>> tags="attachment"/>
+```
+
+!! List the target in a field of the target
+
+```
+title: $:/config/rimir/drop-attach/actions/list-on-target
+tags: $:/tags/rimir/drop-attach/action
+
+<$action-listops $tiddler=<<target>> $field="attachments" $subfilter="[<new>]"/>
+```
+
+!! Open images below the drop target, keep PDFs closed
+
+`$:/config/rimir/drop-attach/open-filter`:
+
+```
+[all[]] :filter[get[type]prefix[image/]]
+```
+
+(Core `is[image]` would also match PDFs.)
+
+!! Keep attachments in one folder per day
+
+`$:/config/rimir/drop-attach/title-filter`:
+
+```
+[<now YYYY-0MM-0DD>addprefix[attachments/]addsuffix[/]addsuffix<filename>]
+```
+
+</$fill>
+</$transclude>

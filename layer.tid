@@ -1,0 +1,5 @@
+title: $:/plugins/rimir/drop-attach/layer
+tags: $:/tags/PageTemplate
+type: text/vnd.tiddlywiki
+
+<$drop-attach-layer/>

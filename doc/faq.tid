@@ -1,0 +1,42 @@
+created: 20261104090000000
+modified: 20261104090000000
+rdt.hub-category: tools
+rdt.hub-category-name: Tools
+rdt.hub-order: 4
+rdt.order: 5
+rdt.plugin-key: drop-attach
+rdt.plugin-name: drop attach
+rdt.plugin-subtitle: Drop or paste binary files onto a tiddler
+rdt.section: FAQ
+title: $:/plugins/rimir/drop-attach/doc/faq
+type: text/vnd.tiddlywiki
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! Q: Why is nothing linked after a drop?
+
+The plugin links nothing by itself. Add an action tiddler (see //Examples → Link the new tiddler to the drop target//).
+
+!! Q: I dropped a Markdown file and got the import dialog.
+
+On purpose: text files are tiddler content, not attachments, and go to the normal import. Only binary types are attached.
+
+!! Q: Paste does nothing / says to select a tiddler.
+
+Click into the tiddler you want to paste into (the thin bar on its left edge shows it is selected), then paste. The selected tiddler must be visible. A paste into a text editor is left to the editor.
+
+!! Q: Does it need a server?
+
+No. The file is stored in the wiki. On a Node.js server wiki TiddlyWiki saves it as a real file next to its `.meta`; in a single-file wiki it stays embedded until you extract it.
+
+!! Q: My file type is attached as application/octet-stream.
+
+TiddlyWiki does not know it. Add a line `<mime type> <.extension>` to `$:/config/rimir/drop-attach/extra-types` and restart.
+
+!! Q: Can I drop on something other than story tiddlers?
+
+Yes: tag a tiddler <<tag "$:/tags/rimir/drop-attach/target">> with a `selector` and the `title-attribute` that holds the title (see //Reference → Drop targets//).
+
+</$fill>
+</$transclude>

@@ -1,0 +1,10 @@
+title: $:/plugins/rimir/drop-attach/styles
+tags: $:/tags/Stylesheet
+type: text/vnd.tiddlywiki
+
+\rules except dash
+
+.da-dragover {
+	outline: 2px dashed <<colour primary>>;
+	outline-offset: 3px;
+}

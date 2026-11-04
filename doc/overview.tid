@@ -1,0 +1,39 @@
+created: 20261104090000000
+modified: 20261104090000000
+rdt.hub-category: tools
+rdt.hub-category-name: Tools
+rdt.hub-order: 4
+rdt.order: 1
+rdt.plugin-key: drop-attach
+rdt.plugin-name: drop attach
+rdt.plugin-subtitle: Drop or paste binary files onto a tiddler
+rdt.section: Overview
+title: $:/plugins/rimir/drop-attach/doc/overview
+type: text/vnd.tiddlywiki
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! What it does
+
+Drop a binary file (PDF, image, office document, archive, …) onto a tiddler in the story, or onto a stream row, and it becomes a tiddler right away: the file is stored in the wiki as base64, no `$:/Import` dialog, no server needed. What happens next is up to your wiki's configuration: link the new tiddler to the one you dropped on, give it fields, open it below the drop target.
+
+Pasting works too: click a tiddler to select it (a thin bar on its left edge marks it), then paste a file or a screenshot.
+
+!! How you use it
+
+# Drag a file from your file manager onto a tiddler. The tiddler gets a dashed outline; release.
+# The new tiddler is called `<tiddler>/<file name>` (configurable). A notice says what was attached.
+# To paste: click the tiddler, then Ctrl+V. Without a selected tiddler a notice tells you to select one.
+# Text files (`.md`, `.json`, `.tid`, `.csv`, …) are not attached: they go to TiddlyWiki's normal import, as before. Dropping outside any tiddler also behaves as before.
+
+!! What the plugin does not decide
+
+The plugin ships //no// linking. Linking to the drop target, extra fields, a kind type — all of that is a small action tiddler in your wiki (see //Examples//). The plugin provides the variables and runs your actions.
+
+!! Getting the files out later
+
+Base64 makes a single-file wiki big. A command-line run turns the attachments into external files plus `_canonical_uri` whenever you want (see //Reference → Extracting files//). On a Node.js server wiki TiddlyWiki already saves binary tiddlers as real files on disk.
+
+</$fill>
+</$transclude>

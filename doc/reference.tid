@@ -1,0 +1,81 @@
+created: 20261104090000000
+modified: 20261104090000000
+rdt.hub-category: tools
+rdt.hub-category-name: Tools
+rdt.hub-order: 4
+rdt.order: 3
+rdt.plugin-key: drop-attach
+rdt.plugin-name: drop attach
+rdt.plugin-subtitle: Drop or paste binary files onto a tiddler
+rdt.section: Reference
+title: $:/plugins/rimir/drop-attach/doc/reference
+type: text/vnd.tiddlywiki
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! Configuration
+
+All are plain config tiddlers; edit them in the settings tab or override them in your wiki.
+
+|!Tiddler |!Default |!Meaning |
+|`$:/config/rimir/drop-attach/title-filter` |`[<target>addsuffix[/]addsuffix<filename>]` |Title of the new tiddler; first result counts. Variables: `target`, `filename`, `type`, `source`, `size`. A taken title gets `-1`, `-2`, … before the extension |
+|`$:/config/rimir/drop-attach/open-filter` |(empty = never) |Runs on each new tiddler; those it keeps open in the story right after the story tiddler you dropped on (or that holds the stream row). `[all[]]` = always. Note: core `is[image]` also matches PDFs; for images only use `[all[]] :filter[get[type]prefix[image/]]` |
+|`$:/config/rimir/drop-attach/max-size` |`30` |Size limit per file in MB. Bigger files are skipped with a notice |
+|`$:/config/rimir/drop-attach/paste-name` |`[<now YYYY0MM0DD-0hh0mm0ss>addprefix[pasted-]addsuffix[.]addsuffix<ext>]` |File name for pasted files without a real name (screenshots arrive as `image.png`). Variables: `ext`, `type` |
+|`$:/config/rimir/drop-attach/extra-types` |Outlook `.msg`, `.7z`, `.odt`, `.ods` |One `<mime type> <.extension>` per line, `#` = comment. Registered as base64 types at startup. ''Restart'' (reload; on a server, restart it) |
+
+!! After-upload actions
+
+Tiddlers tagged <<tag "$:/tags/rimir/drop-attach/action">>, run in tag order once per attached file, right after its tiddler was created. Their text is an action string with these variables:
+
+|!Variable |!Value |
+|`new` |Title of the new tiddler |
+|`target` |Title of the tiddler (or stream row) it was dropped or pasted on |
+|`filename` |File name as dropped (pasted files: from `paste-name`) |
+|`type` |Tiddler type, e.g. `application/pdf` |
+|`size` |Size in bytes |
+|`source` |`drop` or `paste` |
+
+The plugin ships none.
+
+!! Drop targets
+
+Tagged <<tag "$:/tags/rimir/drop-attach/target">>. Shipped: story tiddlers in view mode, sq/streams rows.
+
+|!Field |!Meaning |
+|`selector` |CSS selector of the elements that stand for a tiddler (one selector, no comma) |
+|`title-attribute` |Attribute of that element holding the title |
+
+The innermost matching element is the target. During a file drag it has the class `da-dragover`.
+
+!! The new tiddler
+
+|!Field |!Value |
+|`title` |From `title-filter` |
+|`type` |The file's type |
+|`text` |The file, base64 |
+|`drop-attach.file` |The original file name. Also the marker for extracting |
+|`created`, `modified`, `creator`, `modifier` |As for any new tiddler |
+
+!! State
+
+|!Tiddler |!Meaning |
+|`$:/temp/rimir/drop-attach/target` |Selected paste target (`text` = title). Not saved |
+
+!! Extracting files
+
+Writes every attachment to `files/` next to the output, points the tiddler at it with `_canonical_uri` and empties its `text`:
+
+```
+tiddlywiki <wiki> \
+  --save "[has[drop-attach.file]]" "[encodeuricomponent[]addprefix[files/]]" \
+  --setfield "[has[drop-attach.file]]" _canonical_uri "$:/plugins/rimir/drop-attach/templates/canonical-uri" text/plain \
+  --setfield "[has[drop-attach.file]]" text "" text/plain \
+  --render "$:/core/save/all" index.html text/plain
+```
+
+`--save` writes the binaries (one file per tiddler, the title URI-encoded). The first `--setfield` renders `$:/plugins/rimir/drop-attach/templates/canonical-uri` (`files/<title, double URI-encoded>`, like the core external-image template) into `_canonical_uri`, the second empties `text`, and `--render` writes the wiki with the changed tiddlers. Copy `index.html` and the `files/` folder together. Narrow the filter to extract only some, e.g. `[has[drop-attach.file]prefix[Projects/]]`.
+
+</$fill>
+</$transclude>

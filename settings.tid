@@ -1,0 +1,36 @@
+title: $:/plugins/rimir/drop-attach/settings
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+
+!! Drop attach
+
+Drop binary files onto a tiddler, or click a tiddler and paste. See the <<tag "readme">> and documentation tabs.
+
+<table class="rr-table">
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td>New tiddler title (filter; `<target>`, `<filename>`, `<type>`, `<source>`, `<size>`)</td><td><$edit-text tiddler="$:/config/rimir/drop-attach/title-filter" tag="input" class="rr-input" style="width:100%"/></td></tr>
+<tr><td>Open after the drop target (filter on the new tiddler; empty = never, `[all[]]` = always)</td><td><$edit-text tiddler="$:/config/rimir/drop-attach/open-filter" tag="input" class="rr-input" style="width:100%"/></td></tr>
+<tr><td>Size limit per file (MB)</td><td><$edit-text tiddler="$:/config/rimir/drop-attach/max-size" tag="input" class="rr-input" style="width:80px"/></td></tr>
+<tr><td>Name of pasted files (filter; `<ext>`, `<type>`)</td><td><$edit-text tiddler="$:/config/rimir/drop-attach/paste-name" tag="input" class="rr-input" style="width:100%"/></td></tr>
+</table>
+
+!! Extra file types
+
+One `<mime type> <.extension>` per line; `#` starts a comment. Takes effect after a restart.
+
+<$edit-text tiddler="$:/config/rimir/drop-attach/extra-types" tag="textarea" class="rr-input" style="width:100%" rows="6"/>
+
+!! After-upload actions
+
+Tiddlers tagged <<tag "$:/tags/rimir/drop-attach/action">> run for every attached file, in tag order.
+
+<$list filter="[all[shadows+tiddlers]tag[$:/tags/rimir/drop-attach/action]!is[draft]]" emptyMessage="''None yet'' — uploads are not linked. Example: a tiddler tagged with the tag above, text `<$action-setfield $tiddler=<<new>> parent=<<target>>/>`.">
+<div><$link/> <code><$text text={{!!text}}/></code></div>
+</$list>
+
+!! Drop targets
+
+<$list filter="[all[shadows+tiddlers]tag[$:/tags/rimir/drop-attach/target]!is[draft]]">
+<div><$link/>: <code><$text text={{!!selector}}/></code></div>
+</$list>

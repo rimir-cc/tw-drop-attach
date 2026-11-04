@@ -1,0 +1,4 @@
+title: $:/plugins/rimir/drop-attach/notification
+type: text/vnd.tiddlywiki
+
+<$text text=<<drop-attach-message>>/>

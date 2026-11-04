@@ -1,0 +1,7 @@
+title: $:/plugins/rimir/drop-attach/changelog
+type: text/vnd.tiddlywiki
+
+! Changelog
+
+|!Version |!Date |!Changes |
+|v0.1.0 |2026-11-04 |First version: drop binary files onto story tiddlers and stream rows (stored as base64, no `$:/Import`), paste into the clicked (marked) tiddler, after-upload action tiddlers with `target`/`new`/`filename`/`type`/`size`/`source`, open filter (opens after the drop target), title filter, size limit (30 MB), pasted-file names, extra file types, drop target specs, text files left to the normal import, extraction recipe with `_canonical_uri` template. |
