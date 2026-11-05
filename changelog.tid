@@ -4,6 +4,7 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|v0.1.3 |2026-11-05 |Dropping one file onto a binary tiddler replaces its content (asks first); marker `tw-desk-update-of` for TW Desk. |
 |v0.1.2 |2026-11-05 |The append action always writes a transclusion; rimir/derived-view support removed. |
 |v0.1.1 |2026-11-04 |New shipped action `actions/append-view`: appends a line showing the attachment to the end of the tiddler it was dropped on (`<<derived-view …>>` with rimir/derived-view, else a transclusion; setting `append`). Removed: opening new tiddlers in the story (`open-filter`). |
 |v0.1.0 |2026-11-04 |First version: drop binary files onto story tiddlers and stream rows (stored as base64, no `$:/Import`), paste into the clicked (marked) tiddler, after-upload action tiddlers with `target`/`new`/`filename`/`type`/`size`/`source`, open filter (opens after the drop target), title filter, size limit (30 MB), pasted-file names, extra file types, drop target specs, text files left to the normal import, extraction recipe with `_canonical_uri` template. |

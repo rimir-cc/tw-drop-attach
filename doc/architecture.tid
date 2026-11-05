@@ -18,7 +18,7 @@ type: text/vnd.tiddlywiki
 
 |!Tiddler |!Role |
 |`layer.js` |The `<$drop-attach-layer>` widget, rendered once from `layer` (PageTemplate). Page-wide listeners in the capture phase: file drags over targets, drops, clicks (select), paste |
-|`attach.js` |Library: which files are attached (`typeOf`), the size limit, the new title (`titleFor`, `uniqueTitle`), the fields, the action tiddlers, the target specs. No DOM, covered by the specs |
+|`attach.js` |Library: which files are attached (`typeOf`), replace targets and replaced fields (`isReplaceTarget`, `replaceFields`), the size limit, the new title (`titleFor`, `uniqueTitle`), the fields, the action tiddlers, the target specs. No DOM, covered by the specs |
 |`startup.js` |Registers the extra file types from the config as base64 types, in the browser and on the server |
 |`styles-target` |Stylesheet that marks the selected paste target, generated from the target specs |
 |`targets/*` |Drop target specs (story tiddler, stream row) |
@@ -29,12 +29,17 @@ type: text/vnd.tiddlywiki
 
 ```
 file dragged over a target ──► target gets da-dragover; event stopped (no core overlay)
-drop                       ──► files split: binary → attach, text → core import (tm-import-tiddlers)
+drop                       ──► one binary file onto a binary tiddler → confirm → replace its content (see below)
+                               else files split: binary → attach, text → core import (tm-import-tiddlers)
                                too big → notice
 each binary file           ──► FileReader (base64) → tiddler {title, type, text, drop-attach.file}
                            ──► every action tiddler, with <target> <new> <filename> <type> <size> <source>
                            ──► one notice
 ```
+
+!! Replacing the content
+
+`isReplaceTarget`: an existing non-system tiddler with `_canonical_uri` or a base64 type. `replaceFields` keeps every field and sets `text` (base64), `type` (the file's), `modified`; it removes `_canonical_uri`. Only when that value started with `files/` and there is no `tw-desk-update-of` yet, it is copied into `tw-desk-update-of`, so a second replace before TW Desk ran keeps the original path. External URIs get no marker. `drop-attach.file` is updated where it exists. Paste never replaces.
 
 !! Why the capture phase
 

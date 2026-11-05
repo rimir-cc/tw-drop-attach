@@ -30,6 +30,14 @@ On purpose: text files are tiddler content, not attachments, and go to the norma
 
 Click into the tiddler you want to paste into (the thin bar on its left edge shows it is selected), then paste. The selected tiddler must be visible. A paste into a text editor is left to the editor.
 
+!! Q: I dropped a file onto an image or PDF tiddler and was asked to replace it.
+
+Dropping one file onto a binary tiddler makes it the new version of that tiddler. Cancel keeps the old content; nothing is attached then. To attach a file to it instead, drop two or more files, or drop onto a wikitext tiddler.
+
+!! Q: What is `tw-desk-update-of`?
+
+A marker for TW Desk: the tiddler's old content lived in `files/<name>`, the new version is embedded for now. When the wiki stops, TW Desk overwrites that file with it instead of creating a second one. Without TW Desk the field is harmless.
+
 !! Q: Does it need a server?
 
 No. The file is stored in the wiki. On a Node.js server wiki TiddlyWiki saves it as a real file next to its `.meta`; in a single-file wiki it stays embedded until you extract it.

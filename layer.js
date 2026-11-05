@@ -16,6 +16,8 @@ page-wide listeners of rimir/drop-attach:
 * pasting files, while not typing in an input or editor, attaches them to the
   selected target if it is on screen; otherwise a notice says to select one
 * files that are no binary (text, JSON, .tid …) go to the normal import
+* one binary file dropped onto a binary tiddler (base64 type or
+  _canonical_uri) replaces its content after asking, instead of attaching
 
 What a file becomes (type, title, fields, actions) is in attach.js.
 
@@ -149,7 +151,13 @@ DropAttachLayerWidget.prototype.onDrop = function(e) {
 	}
 	e.preventDefault();
 	e.stopPropagation();
-	this.attachFiles(e.dataTransfer.files, this.titleOf(target), "drop", e);
+	var title = this.titleOf(target),
+		files = e.dataTransfer.files;
+	if(files.length === 1 && attach.typeOf(files[0].name, files[0].type) && attach.isReplaceTarget(this.wiki, title)) {
+		this.replaceContent(files[0], title);
+	} else {
+		this.attachFiles(files, title, "drop", e);
+	}
 };
 
 // ---------- select and paste ----------
@@ -257,6 +265,34 @@ DropAttachLayerWidget.prototype.create = function(items, target, source, event, 
 		messages.unshift("Attached " + created.map(function(c) { return c.filename; }).join(", ") + " to " + this.captionOf(target) + ".");
 	}
 	this.notify(messages.join(" "));
+};
+
+// ---------- replacing ----------
+
+// A binary file dropped onto a binary tiddler becomes its new version, after asking
+DropAttachLayerWidget.prototype.replaceContent = function(file, title) {
+	var self = this,
+		wiki = this.wiki,
+		max = attach.maxBytes(wiki);
+	if(file.size > max) {
+		this.notify(file.name + " is too big (" + attach.sizeLabel(file.size) + ", limit " + attach.sizeLabel(max) + ").");
+		return;
+	}
+	if(!window.confirm("Replace the content of " + title + " with " + file.name + "?")) {
+		return;
+	}
+	var reader = new FileReader();
+	reader.onload = function() {
+		var tiddler = wiki.getTiddler(title);
+		if(tiddler) {
+			wiki.addTiddler(attach.replaceFields(wiki, tiddler, attach.typeOf(file.name, file.type), String(reader.result).split(",")[1] || "", file.name));
+			self.notify("Replaced the content of " + self.captionOf(title) + " with " + file.name + ".");
+		}
+	};
+	reader.onerror = function() {
+		self.notify(file.name + " could not be read.");
+	};
+	reader.readAsDataURL(file);
 };
 
 DropAttachLayerWidget.prototype.captionOf = function(title) {

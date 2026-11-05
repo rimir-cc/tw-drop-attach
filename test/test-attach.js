@@ -93,6 +93,78 @@ describe("drop-attach", function() {
 		});
 	});
 
+	describe("dropping onto a binary tiddler", function() {
+
+		function replace(title, type, base64, filename) {
+			var tiddler = attach.replaceFields($tw.wiki, $tw.wiki.getTiddler(title), type, base64, filename);
+			$tw.wiki.addTiddler(tiddler);
+			return $tw.wiki.getTiddler(title).fields;
+		}
+
+		it("replaces tiddlers with base64 or _canonical_uri content, not text or system tiddlers", function() {
+			add({title: "Img", type: "image/png", text: "iVBO"});
+			add({title: "Ext", type: "application/pdf", _canonical_uri: "files/report.pdf"});
+			add({title: "Txt", text: "x"});
+			add({title: "$:/Img", type: "image/png", text: "iVBO"});
+			expect(attach.isReplaceTarget($tw.wiki, "Img")).toBe(true);
+			expect(attach.isReplaceTarget($tw.wiki, "Ext")).toBe(true);
+			expect(attach.isReplaceTarget($tw.wiki, "Txt")).toBe(false);
+			expect(attach.isReplaceTarget($tw.wiki, "$:/Img")).toBe(false);
+			expect(attach.isReplaceTarget($tw.wiki, "Missing")).toBe(false);
+		});
+
+		it("replaces text and type of an embedded tiddler, keeps the other fields, sets no marker", function() {
+			add({title: "Img", type: "image/png", text: "iVBO", tags: "Photo", caption: "Logo", created: new Date(2020, 0, 1), modified: new Date(2020, 0, 1), owner: "me"});
+			var fields = replace("Img", "image/png", "NEW", "logo.png");
+			expect(fields.text).toBe("NEW");
+			expect(fields.tags).toEqual(["Photo"]);
+			expect(fields.caption).toBe("Logo");
+			expect(fields.owner).toBe("me");
+			expect(fields.created.getFullYear()).toBe(2020);
+			expect(fields.modified.getFullYear()).not.toBe(2020);
+			expect(fields[attach.UPDATE_FIELD]).toBeUndefined();
+		});
+
+		it("embeds an externalized file and marks files/<name> for TW Desk", function() {
+			add({title: "Report", type: "application/pdf", text: "", _canonical_uri: "files/report.pdf", tags: "Doc", caption: "Report"});
+			var fields = replace("Report", "application/pdf", "JVBE", "report-v2.pdf");
+			expect(fields.text).toBe("JVBE");
+			expect(fields._canonical_uri).toBeUndefined();
+			expect(fields[attach.UPDATE_FIELD]).toBe("files/report.pdf");
+			expect(fields.tags).toEqual(["Doc"]);
+			expect(fields.caption).toBe("Report");
+		});
+
+		it("keeps the marker of an earlier replace", function() {
+			add({title: "Report", type: "application/pdf", _canonical_uri: "files/report.pdf"});
+			replace("Report", "application/pdf", "V2", "r.pdf");
+			var fields = replace("Report", "application/pdf", "V3", "r.pdf");
+			expect(fields.text).toBe("V3");
+			expect(fields[attach.UPDATE_FIELD]).toBe("files/report.pdf");
+		});
+
+		it("takes the new file's type", function() {
+			add({title: "Pic", type: "image/png", _canonical_uri: "files/pic.png"});
+			var fields = replace("Pic", attach.typeOf("pic.jpg", "image/jpeg"), "/9j/", "pic.jpg");
+			expect(fields.type).toBe("image/jpeg");
+			expect(fields[attach.UPDATE_FIELD]).toBe("files/pic.png");
+		});
+
+		it("drops an external _canonical_uri without a marker", function() {
+			add({title: "Web", type: "image/png", _canonical_uri: "https://example.com/a.png"});
+			var fields = replace("Web", "image/png", "iVBO", "a.png");
+			expect(fields._canonical_uri).toBeUndefined();
+			expect(fields[attach.UPDATE_FIELD]).toBeUndefined();
+		});
+
+		it("updates the stored file name only on tiddlers drop-attach made", function() {
+			add({title: "Img", type: "image/png", text: "a", "drop-attach.file": "old.png"});
+			add({title: "Other", type: "image/png", text: "a"});
+			expect(replace("Img", "image/png", "b", "new.png")[attach.FILE_FIELD]).toBe("new.png");
+			expect(replace("Other", "image/png", "b", "new.png")[attach.FILE_FIELD]).toBeUndefined();
+		});
+	});
+
 	describe("the shipped append action", function() {
 
 		var ACTION = "$:/plugins/rimir/drop-attach/actions/append-view";

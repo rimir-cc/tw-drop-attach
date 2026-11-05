@@ -27,6 +27,12 @@ Pasting works too: click a tiddler to select it (a thin bar on its left edge mar
 # To paste: click the tiddler, then Ctrl+V. Without a selected tiddler a notice tells you to select one.
 # Text files (`.md`, `.json`, `.tid`, `.csv`, …) are not attached: they go to TiddlyWiki's normal import, as before. Dropping outside any tiddler also behaves as before.
 
+!! A new version of a file
+
+Drop //one// file onto a tiddler that is itself a binary (an image, a PDF, … — embedded as base64, or with `_canonical_uri`). The plugin asks "Replace the content of <title> with <file name>?"; on OK the file becomes that tiddler's content: base64 text and the file's type (which may change, e.g. png → jpg). Title, tags, caption, created and all other fields stay; `modified` is updated. Nothing is attached and no line is appended. System tiddlers and text tiddlers are never replaced, and several files dropped at once are attached as usual.
+
+The new version is always embedded, so a `_canonical_uri` is removed. If it pointed into `files/` (TW Desk's folder), the tiddler gets `tw-desk-update-of: files/<name>`: when the wiki stops, TW Desk writes the new version over that file instead of creating a second one. The plugin itself never writes into `files/`.
+
 !! What the plugin does not decide
 
 The plugin ships //no// linking. Linking to the drop target, extra fields, a kind type — all of that is a small action tiddler in your wiki (see //Examples//). The plugin provides the variables and runs your actions.

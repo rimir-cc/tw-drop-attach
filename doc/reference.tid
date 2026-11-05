@@ -58,6 +58,19 @@ The innermost matching element is the target. During a file drag it has the clas
 |`drop-attach.file` |The original file name. Also the marker for extracting |
 |`created`, `modified`, `creator`, `modifier` |As for any new tiddler |
 
+!! A replaced tiddler
+
+Dropping one binary file onto a binary tiddler (confirmed):
+
+|!Field |!Value |
+|`text` |The new file, base64 |
+|`type` |The new file's type |
+|`_canonical_uri` |Removed |
+|`tw-desk-update-of` |The old `_canonical_uri` if it started with `files/` and the field was not set yet; otherwise unchanged. Read by TW Desk when the wiki stops |
+|`drop-attach.file` |The new file name, if the tiddler had this field |
+|`modified`, `modifier` |Updated |
+|everything else |Unchanged |
+
 !! State
 
 |!Tiddler |!Meaning |
