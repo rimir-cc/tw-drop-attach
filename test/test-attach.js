@@ -95,23 +95,7 @@ describe("drop-attach", function() {
 
 	describe("the shipped append action", function() {
 
-		var ACTION = "$:/plugins/rimir/drop-attach/actions/append-view",
-			VIEW = "$:/plugins/rimir/derived-view",
-			view;
-
-		// without rimir/derived-view unless a spec adds it
-		beforeEach(function() {
-			view = $tw.wiki.getTiddler(VIEW);
-			$tw.wiki.deleteTiddler(VIEW);
-		});
-
-		afterEach(function() {
-			if(view) {
-				$tw.wiki.addTiddler(view);
-			} else {
-				$tw.wiki.deleteTiddler(VIEW);
-			}
-		});
+		var ACTION = "$:/plugins/rimir/drop-attach/actions/append-view";
 
 		function run(target, newTitle) {
 			$tw.rootWidget.invokeActionString($tw.wiki.getTiddlerText(ACTION), $tw.rootWidget, null, {target: target, "new": newTitle});
@@ -127,12 +111,6 @@ describe("drop-attach", function() {
 			add({title: "K"});
 			run("K", "K/a.pdf");
 			expect(run("K", "K/b.png")).toBe('<$transclude $tiddler="""K/a.pdf"""/>\n\n<$transclude $tiddler="""K/b.png"""/>');
-		});
-
-		it("uses <<derived-view>> when rimir/derived-view is installed", function() {
-			add({title: "K", text: "x"});
-			$tw.wiki.addTiddler({title: VIEW, text: "{}"});
-			expect(run("K", "K/a.pdf")).toBe('x\n\n<<derived-view """K/a.pdf""">>');
 		});
 
 		it("leaves system tiddlers, non-wikitext targets and a switched-off setting alone", function() {

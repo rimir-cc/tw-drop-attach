@@ -22,7 +22,7 @@ type: text/vnd.tiddlywiki
 |`startup.js` |Registers the extra file types from the config as base64 types, in the browser and on the server |
 |`styles-target` |Stylesheet that marks the selected paste target, generated from the target specs |
 |`targets/*` |Drop target specs (story tiddler, stream row) |
-|`actions/append-view` |The shipped after-upload action: appends `<<derived-view …>>` (or a transclusion without rimir/derived-view) to the target's text; config `append` |
+|`actions/append-view` |The shipped after-upload action: appends a transclusion of the new tiddler to the target's text; config `append` |
 |`templates/canonical-uri` |`_canonical_uri` for extracted files |
 
 !! Flow of a drop
