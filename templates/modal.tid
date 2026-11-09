@@ -1,0 +1,6 @@
+title: $:/plugins/rimir/drop-attach/templates/modal
+class: da-modal
+subtitle: <$text text={{{ [<da-attachment>get[drop-attach.file]] ~[<da-attachment>split[/]last[]] }}}/>
+type: text/vnd.tiddlywiki
+
+<div class="da-modal-body"><$transclude $tiddler=<<da-attachment>> $mode="block"/></div>

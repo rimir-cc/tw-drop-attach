@@ -174,15 +174,15 @@ describe("drop-attach", function() {
 			return $tw.wiki.getTiddlerText(target);
 		}
 
-		it("appends a transclusion of the attachment after a blank line", function() {
+		it("appends an attachment card after a blank line", function() {
 			add({title: "K", text: "Notes\n\n"});
-			expect(run("K", "K/a.pdf")).toBe('Notes\n\n<$transclude $tiddler="""K/a.pdf"""/>');
+			expect(run("K", "K/a.pdf")).toBe('Notes\n\n<<attachment """K/a.pdf""">>');
 		});
 
 		it("appends one line per file and starts an empty tiddler with it", function() {
 			add({title: "K"});
 			run("K", "K/a.pdf");
-			expect(run("K", "K/b.png")).toBe('<$transclude $tiddler="""K/a.pdf"""/>\n\n<$transclude $tiddler="""K/b.png"""/>');
+			expect(run("K", "K/b.png")).toBe('<<attachment """K/a.pdf""">>\n\n<<attachment """K/b.png""">>');
 		});
 
 		it("leaves system tiddlers, non-wikitext targets and a switched-off setting alone", function() {
@@ -193,6 +193,99 @@ describe("drop-attach", function() {
 			add({title: "K", text: "x"});
 			add({title: CONFIG + "append", text: "no"});
 			expect(run("K", "n")).toBe("x");
+		});
+	});
+
+	describe("the attachment card", function() {
+
+		var PDF = "K/a.pdf",
+			B64 = new Array(1001).join("QUJD"); // 3000 bytes
+
+		// Renders <<attachment>> inside host tiddler "K"; returns {html, widget, container}
+		function render(title, host) {
+			var parser = $tw.wiki.parseText("text/vnd.tiddlywiki",
+					"\\import [subfilter{$:/core/config/GlobalImportFilter}]\n<$tiddler tiddler=\"\"\"" + (host || "K") + "\"\"\"><<attachment \"\"\"" + title + "\"\"\">></$tiddler>"),
+				widget = $tw.wiki.makeWidget(parser, {document: $tw.fakeDocument}),
+				container = $tw.fakeDocument.createElement("div");
+			widget.render(container, null);
+			return {html: container.innerHTML, widget: widget, container: container};
+		}
+
+		function findWidget(node, test) {
+			if(test(node)) { return node; }
+			for(var i = 0; i < (node.children || []).length; i++) {
+				var found = findWidget(node.children[i], test);
+				if(found) { return found; }
+			}
+			return null;
+		}
+
+		function stateTitles() {
+			return $tw.wiki.filterTiddlers("[prefix[$:/state/rimir/drop-attach/card]]");
+		}
+
+		afterEach(function() {
+			stateTitles().forEach(function(title) { $tw.wiki.deleteTiddler(title); });
+		});
+
+		it("starts collapsed: name and size, no viewer", function() {
+			add({title: PDF, type: "application/pdf", text: B64, "drop-attach.file": "agenda.pdf"});
+			var html = render(PDF).html;
+			expect(html).toContain("da-card da-card-pdf");
+			expect(html).toContain('<span class="da-card-name">agenda.pdf</span>');
+			expect(html).toContain("3 KB");
+			expect(html).not.toContain("<iframe");
+		});
+
+		it("unfolds into a full-width viewer when the toggle is clicked", function() {
+			add({title: PDF, type: "application/pdf", text: B64});
+			var r = render(PDF),
+				toggle = findWidget(r.widget, function(w) { return w.parseTreeNode.type === "button" && /da-card-toggle/.test(w.getAttribute("class") || ""); });
+			toggle.invokeActions(toggle, {});
+			var changes = {};
+			stateTitles().forEach(function(title) { changes[title] = {modified: true}; });
+			r.widget.refresh(changes);
+			expect(r.container.innerHTML).toContain("da-card-open");
+			expect(r.container.innerHTML).toContain('<div class="da-card-body"><iframe');
+		});
+
+		it("offers no viewer for files the browser cannot show inline", function() {
+			add({title: "K/m.msg", type: "application/vnd.ms-outlook", text: "QUJD"});
+			var html = render("K/m.msg").html;
+			expect(html).toContain("da-card-static");
+			expect(html).not.toContain("da-card-toggle\" title");
+			expect(html).not.toContain("View large");
+			expect(html).toContain("Download");
+		});
+
+		it("counts other tiddlers that mention the attachment, not its host", function() {
+			add({title: PDF, type: "application/pdf", text: B64});
+			add({title: "K", text: "<<attachment \"\"\"K/a.pdf\"\"\">>"});
+			expect(render(PDF).html).not.toContain("da-card-used");
+			add({title: "Elsewhere", text: "see [[K/a.pdf]]"});
+			expect(render(PDF).html).toContain("↩ 1");
+		});
+
+		it("copies the name and the macro call", function() {
+			add({title: PDF, type: "application/pdf", text: B64});
+			var r = render(PDF),
+				params = [];
+			findWidget(r.widget, function(w) {
+				if(w.parseTreeNode.type === "button" && w.getAttribute("message") === "tm-copy-to-clipboard") {
+					params.push(w.getAttribute("param"));
+				}
+				return false;
+			});
+			expect(params).toEqual([PDF, '<<attachment """K/a.pdf""">>']);
+		});
+
+		it("marks a missing attachment", function() {
+			expect(render("K/gone.pdf").html).toContain("K/gone.pdf (missing)");
+		});
+
+		it("downloads the raw base64 text", function() {
+			add({title: PDF, type: "application/pdf", text: B64});
+			expect($tw.wiki.renderTiddler("text/plain", "$:/plugins/rimir/drop-attach/templates/download", {variables: {"da-attachment": PDF}})).toBe(B64);
 		});
 	});
 

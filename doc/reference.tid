@@ -20,7 +20,7 @@ All are plain config tiddlers; edit them in the settings tab or override them in
 
 |!Tiddler |!Default |!Meaning |
 |`$:/config/rimir/drop-attach/title-filter` |`[<target>addsuffix[/]addsuffix<filename>]` |Title of the new tiddler; first result counts. Variables: `target`, `filename`, `type`, `source`, `size`. A taken title gets `-1`, `-2`, … before the extension |
-|`$:/config/rimir/drop-attach/append` |`yes` |`no` switches off the shipped action that appends a line showing the attachment to the target's text (`<$transclude $tiddler="""<new>"""/>`). Skipped for system tiddlers and targets that are not wikitext |
+|`$:/config/rimir/drop-attach/append` |`yes` |`no` switches off the shipped action that appends a line showing the attachment to the target's text (`<<attachment """<new>""">>`). Skipped for system tiddlers and targets that are not wikitext |
 |`$:/config/rimir/drop-attach/max-size` |`30` |Size limit per file in MB. Bigger files are skipped with a notice |
 |`$:/config/rimir/drop-attach/paste-name` |`[<now YYYY0MM0DD-0hh0mm0ss>addprefix[pasted-]addsuffix[.]addsuffix<ext>]` |File name for pasted files without a real name (screenshots arrive as `image.png`). Variables: `ext`, `type` |
 |`$:/config/rimir/drop-attach/extra-types` |Outlook `.msg`, `.7z`, `.odt`, `.ods` |One `<mime type> <.extension>` per line, `#` = comment. Registered as base64 types at startup. ''Restart'' (reload; on a server, restart it) |
@@ -38,6 +38,22 @@ Tiddlers tagged <<tag "$:/tags/rimir/drop-attach/action">>, run in tag order onc
 |`source` |`drop` or `paste` |
 
 The plugin ships one, `$:/plugins/rimir/drop-attach/actions/append-view` (see `append` above). To replace it, override that tiddler; empty text switches it off.
+
+!! The attachment card
+
+`<<attachment "title">>` (global procedure, `$:/plugins/rimir/drop-attach/card`) shows an attached file as a card. Usable in any tiddler; the shipped action writes it, the card's copy button copies it.
+
+|!Part |!Behaviour |
+|Header |File name (`drop-attach.file`, else the last title segment) and size (embedded files). Starts collapsed |
+|Toggle |PDFs and `image/*` only: unfolds an inline viewer. PDFs are full width, 600px high, the height can be dragged. State per card in `$:/state/rimir/drop-attach/card…/open/<title>` |
+|View large |PDFs and images: a modal of about the window size (`templates/modal`) |
+|Download |Embedded files: `tm-download-file` with `templates/download` (the original file name and type). `_canonical_uri` files: a plain download link |
+|Open |Navigates to the attachment tiddler |
+|Copy name / copy macro |`tm-copy-to-clipboard` with the title, or with `<<attachment """title""">>` |
+|`↩ n` |Non-system, non-binary tiddlers other than the host whose text contains the title; click for the list |
+|Missing title |A dashed `title (missing)` label |
+
+Styling: classes `da-card`, `da-card-open`, `da-card-pdf`, `da-card-image`, `da-card-head`, `da-card-actions`, `da-card-body`, `da-modal` (in `styles`).
 
 !! Drop targets
 

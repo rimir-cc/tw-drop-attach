@@ -14,7 +14,7 @@ type: text/vnd.tiddlywiki
 <$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
 <$fill $name="body">
 
-!! Q: A line like `<$transclude $tiddler=…/>` appeared in the tiddler I dropped on.
+!! Q: A line like `<<attachment """…""">>` appeared in the tiddler I dropped on.
 
 That is the shipped action showing the attachment where you dropped it. It is ordinary text: move it, delete it, or switch the action off in the settings (`$:/config/rimir/drop-attach/append` = `no`).
 
@@ -49,6 +49,10 @@ TiddlyWiki does not know it. Add a line `<mime type> <.extension>` to `$:/config
 !! Q: Can I drop on something other than story tiddlers?
 
 Yes: tag a tiddler <<tag "$:/tags/rimir/drop-attach/target">> with a `selector` and the `title-attribute` that holds the title (see //Reference → Drop targets//).
+
+!! Q: Older attachments show as `<$transclude $tiddler=…/>` and the last PDF is tiny.
+
+Versions before 0.1.4 appended a plain transclusion. TiddlyWiki parses a widget line as a block only when a line break follows it; the last line of a tiddler has none, so it is wrapped in a paragraph and the core rule that sizes PDFs (`.tc-tiddler-body > iframe`, 100% × 600px) no longer applies: the browser default of 300 × 150 remains. Replace such lines with `<<attachment """<title>""">>`; the card sizes its viewer itself, wherever it stands.
 
 </$fill>
 </$transclude>

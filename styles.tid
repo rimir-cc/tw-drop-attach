@@ -8,3 +8,151 @@ type: text/vnd.tiddlywiki
 	outline: 2px dashed <<colour primary>>;
 	outline-offset: 3px;
 }
+
+/* <<attachment>> card: one quiet header line, buttons on hover, body when unfolded */
+.da-card {
+	display: block;
+	margin: 0.4em 0;
+	border: 1px solid <<colour tiddler-border>>;
+	border-radius: 6px;
+	background: <<colour tiddler-background>>;
+	overflow: hidden;
+}
+.da-card-head {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	padding: 0.2em 0.5em;
+	min-height: 2em;
+	font-size: 0.9em;
+	line-height: 1.4;
+}
+.da-card-open .da-card-head {
+	border-bottom: 1px solid <<colour tiddler-border>>;
+}
+.da-card-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4em;
+	min-width: 0;
+	flex: 0 1 auto;
+	color: <<colour foreground>>;
+	text-align: left;
+}
+.da-card-toggle svg,
+.da-card-btn svg {
+	width: 0.95em;
+	height: 0.95em;
+	fill: <<colour muted-foreground>>;
+	flex: none;
+}
+.da-card-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.da-card-meta,
+.da-card-used {
+	color: <<colour muted-foreground>>;
+	font-size: 0.85em;
+	white-space: nowrap;
+}
+.da-card-used:hover {
+	color: <<colour primary>>;
+}
+.da-card-actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.15em;
+	margin-left: auto;
+	opacity: 0;
+	transition: opacity 120ms ease-in-out;
+}
+.da-card:hover .da-card-actions,
+.da-card:focus-within .da-card-actions {
+	opacity: 1;
+}
+@media (hover: none) {
+	.da-card-actions {
+		opacity: 1;
+	}
+}
+.da-card-btn {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.2em 0.3em;
+	border-radius: 4px;
+	line-height: 1;
+}
+.da-card-btn:hover {
+	background: color-mix(in srgb, <<colour muted-foreground>> 15%, transparent);
+}
+.da-card-btn:hover svg {
+	fill: <<colour foreground>>;
+}
+.da-card-used-list {
+	max-height: 18em;
+	overflow-y: auto;
+}
+.da-card-used-list a {
+	display: block;
+	padding: 0.15em 1em;
+}
+/* PDFs: full width, a fixed height the reader can drag (bottom right corner) */
+.da-card-pdf .da-card-body {
+	height: 600px;
+	min-height: 150px;
+	resize: vertical;
+	overflow: hidden;
+}
+.da-card-body > iframe,
+.da-card-body > embed {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+.da-card-image .da-card-body {
+	padding: 0.5em;
+	text-align: center;
+}
+.da-card-image .da-card-body img {
+	max-width: 100%;
+	height: auto;
+}
+.da-card-missing {
+	display: inline-block;
+	padding: 0.1em 0.5em;
+	color: <<colour muted-foreground>>;
+	border-style: dashed;
+}
+.da-card-missing svg {
+	width: 0.9em;
+	height: 0.9em;
+	fill: <<colour muted-foreground>>;
+	vertical-align: -0.1em;
+}
+/* "View large" modal */
+.da-modal .tc-modal {
+	top: 2vh;
+	left: 4vw;
+	right: 4vw;
+	width: auto;
+}
+.da-modal .tc-modal-body {
+	max-height: none;
+	padding: 0;
+}
+.da-modal-body > iframe,
+.da-modal-body > embed {
+	display: block;
+	width: 100%;
+	height: calc(96vh - 9em);
+	border: 0;
+}
+.da-modal-body img {
+	display: block;
+	max-width: 100%;
+	max-height: calc(96vh - 9em);
+	margin: 0 auto;
+}

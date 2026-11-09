@@ -47,11 +47,11 @@ tags: $:/tags/rimir/drop-attach/action
 
 !! Show attachments at a fixed place in the target
 
-The shipped action appends `<$transclude $tiddler="""<title>"""/>` at the end of the tiddler you drop on. To show them somewhere else, switch it off (`$:/config/rimir/drop-attach/append` = `no`), link with `parent` (example above) and list them where you like, e.g. all attached files:
+The shipped action appends `<<attachment """<title>""">>` at the end of the tiddler you drop on. To show them somewhere else, switch it off (`$:/config/rimir/drop-attach/append` = `no`), link with `parent` (example above) and list them where you like, e.g. all attached files:
 
 ```
 <$list filter="[parent<currentTiddler>is[binary]]">
-<$transclude $tiddler=<<currentTiddler>>/>
+<$transclude $variable="attachment" title=<<currentTiddler>>/>
 </$list>
 ```
 

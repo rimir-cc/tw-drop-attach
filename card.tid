@@ -1,0 +1,92 @@
+title: $:/plugins/rimir/drop-attach/card
+tags: $:/tags/Global
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<!-- <<attachment "title">>: an attached file as a quiet card. Starts collapsed
+     (one header line); PDFs and images unfold into an inline view. Buttons
+     (shown on hover): view large, download, open the tiddler, copy the name,
+     copy this macro call; "used in" lists other tiddlers that mention it.
+     Works in block and inline position (it is all elements). -->
+
+\procedure da-card-name()
+<$text text={{{ [<title>get[drop-attach.file]] ~[<title>split[/]last[]] }}}/>
+\end
+
+\procedure da-card-size()
+<%if [<title>!has[_canonical_uri]get[text]length[]compare:number:gt[0]] %>
+<$let bytes={{{ [<title>get[text]length[]multiply[3]divide[4]] }}}>
+<$text text={{{ [<bytes>compare:number:gteq[1048576]divide[1048576]fixed[1]addsuffix[ MB]] ~[<bytes>compare:number:gteq[1024]divide[1024]fixed[0]addsuffix[ KB]] ~[<bytes>fixed[0]addsuffix[ bytes]] }}}/>
+</$let>
+<%endif%>
+\end
+
+\procedure da-card-download()
+<$let name={{{ [<title>get[drop-attach.file]] ~[<title>split[/]last[]] }}}>
+<%if [<title>has[_canonical_uri]] %>
+<a class="tc-btn-invisible da-card-btn" href={{{ [<title>get[_canonical_uri]] }}} download=<<name>> title="Download">{{$:/core/images/download-button}}</a>
+<%else%>
+<$button class="tc-btn-invisible da-card-btn" tooltip="Download">
+<$action-sendmessage $message="tm-download-file" $param="$:/plugins/rimir/drop-attach/templates/download" filename={{{ [<title>get[drop-attach.file]] ~[<title>split[/]last[]] }}} type={{{ [<title>get[type]addsuffix[;base64]] }}} da-attachment=<<title>>/>
+{{$:/core/images/download-button}}
+</$button>
+<%endif%>
+</$let>
+\end
+
+\procedure attachment(title)
+<%if [<title>is[tiddler]] %>
+<$let
+  da-q=<<qualify "$:/state/rimir/drop-attach/card">>
+  da-viewable={{{ [<title>get[type]match[application/pdf]] [<title>get[type]prefix[image/]] +[then[yes]] }}}
+  da-state={{{ [<da-q>addsuffix[/open/]addsuffix<title>] }}}
+  da-used-state={{{ [<da-q>addsuffix[/used/]addsuffix<title>] }}}
+  da-host=<<currentTiddler>>
+  da-call={{{ [<title>addprefix[<<attachment """]addsuffix[""">>]] }}}
+>
+<$let da-open={{{ [<da-viewable>match[yes]] :filter[<da-state>get[text]match[open]] +[then[yes]] }}}>
+<div class={{{ [[da-card]] [<da-open>match[yes]then[da-card-open]] [<title>get[type]match[application/pdf]then[da-card-pdf]] [<title>get[type]prefix[image/]then[da-card-image]] +[join[ ]] }}}>
+<div class="da-card-head">
+<%if [<da-viewable>match[yes]] %>
+<$button class="tc-btn-invisible da-card-toggle" tooltip={{{ [<da-open>match[yes]then[Collapse]else[Expand]] }}}>
+<$action-setfield $tiddler=<<da-state>> text={{{ [<da-open>match[yes]then[closed]else[open]] }}}/>
+<%if [<da-open>match[yes]] %>{{$:/core/images/chevron-down}}<%else%>{{$:/core/images/chevron-right}}<%endif%>
+<span class="da-card-name"><<da-card-name>></span>
+</$button>
+<%else%>
+<span class="da-card-toggle da-card-static">{{$:/core/images/file}}<span class="da-card-name"><<da-card-name>></span></span>
+<%endif%>
+<span class="da-card-meta"><<da-card-size>></span>
+<$let da-used={{{ [all[tiddlers]!is[system]!is[binary]!is[draft]search:text:literal<title>] -[<title>] -[<da-host>] +[count[]] }}}>
+<%if [<da-used>compare:number:gt[0]] %>
+<$button class="tc-btn-invisible da-card-used" popup=<<da-used-state>> tooltip={{{ [<da-used>addprefix[Mentioned in ]addsuffix[ other tiddler(s)]] }}}><$text text={{{ [<da-used>addprefix[↩ ]] }}}/></$button>
+<$reveal type="popup" state=<<da-used-state>> class="tc-drop-down da-card-used-list">
+<$list filter="[all[tiddlers]!is[system]!is[binary]!is[draft]search:text:literal<title>] -[<title>] -[<da-host>] +[sort[]]">
+<$link to=<<currentTiddler>>/>
+</$list>
+</$reveal>
+<%endif%>
+</$let>
+<span class="da-card-actions">
+<%if [<da-viewable>match[yes]] %>
+<$button class="tc-btn-invisible da-card-btn" tooltip="View large">
+<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/drop-attach/templates/modal" da-attachment=<<title>>/>
+{{$:/core/images/full-screen-button}}
+</$button>
+<%endif%>
+<<da-card-download>>
+<$button to=<<title>> class="tc-btn-invisible da-card-btn" tooltip="Open the tiddler">{{$:/core/images/open-window}}</$button>
+<$button message="tm-copy-to-clipboard" param=<<title>> class="tc-btn-invisible da-card-btn" tooltip="Copy the name">{{$:/core/images/copy-clipboard}}</$button>
+<$button message="tm-copy-to-clipboard" param=<<da-call>> class="tc-btn-invisible da-card-btn" tooltip="Copy the macro call (shows this card elsewhere)">{{$:/core/images/linkify}}</$button>
+</span>
+</div>
+<%if [<da-open>match[yes]] %>
+<div class="da-card-body"><$transclude $tiddler=<<title>> $mode="block"/></div>
+<%endif%>
+</div>
+</$let>
+</$let>
+<%else%>
+<span class="da-card da-card-missing">{{$:/core/images/file}}<$text text={{{ [<title>addprefix[ ]addsuffix[ (missing)]] }}}/></span>
+<%endif%>
+\end

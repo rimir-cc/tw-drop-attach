@@ -4,6 +4,7 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|v0.1.4 |2026-11-09 |New `<<attachment>>` card: collapsed header with name and size, inline full-width viewer for PDFs and images (resizable height), on hover view large (modal), download, open, copy name, copy macro call; `↩ n` lists other tiddlers mentioning the file. The append action writes it instead of a transclusion (fixes the tiny last PDF). |
 |v0.1.3 |2026-11-05 |Dropping one file onto a binary tiddler replaces its content (asks first); marker `tw-desk-update-of` for TW Desk. |
 |v0.1.2 |2026-11-05 |The append action always writes a transclusion; rimir/derived-view support removed. |
 |v0.1.1 |2026-11-04 |New shipped action `actions/append-view`: appends a line showing the attachment to the end of the tiddler it was dropped on (`<<derived-view …>>` with rimir/derived-view, else a transclusion; setting `append`). Removed: opening new tiddlers in the story (`open-filter`). |

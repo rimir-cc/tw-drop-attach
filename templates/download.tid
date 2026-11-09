@@ -1,0 +1,8 @@
+title: $:/plugins/rimir/drop-attach/templates/download
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<!-- Rendered by tm-download-file for the card's download button: the base64
+     text of <<da-attachment>>. With type "<mime>;base64" the core download saver
+     turns it into a data URL, so the browser saves the real binary file. -->
+<$text text={{{ [<da-attachment>get[text]] }}}/>

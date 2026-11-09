@@ -5,14 +5,15 @@ type: text/vnd.tiddlywiki
 \whitespace trim
 <!-- Shipped after-upload action: appends one line that shows the new
      attachment to the end of the tiddler it was dropped on, so the drop target
-     shows its attachments without any list: a plain transclusion
-     <$transclude $tiddler="""<new>"""/>. The line is ordinary text: keep, move or delete it.
+     shows its attachments without any list: <<attachment """<new>""">>, a
+     collapsed card (see $:/plugins/rimir/drop-attach/card). The line is
+     ordinary text: keep, move or delete it.
      Off with $:/config/rimir/drop-attach/append = no. Skipped for system
      tiddlers and for targets that are not wikitext (e.g. dropping onto an
      image). -->
 <%if [<target>is[tiddler]!is[system]] :filter[get[type]else[text/vnd.tiddlywiki]match[text/vnd.tiddlywiki]] :filter[{$:/config/rimir/drop-attach/append}!match[no]then[yes]] %>
 <$let
-  call={{{ [<new>addprefix[<$transclude $tiddler="""]addsuffix["""/>]] }}}
+  call={{{ [<new>addprefix[<<attachment """]addsuffix[""">>]] }}}
   gap={{{ [charcode[10],[10]] }}}
   text={{{ [<target>get[text]trim:suffix[]] [<call>] +[!is[blank]join<gap>] }}}
 >

@@ -10,7 +10,7 @@ Drop binary files onto a tiddler, or click a tiddler and paste. See the <<tag "r
 <table class="rr-table">
 <tr><th>Setting</th><th>Value</th></tr>
 <tr><td>New tiddler title (filter; `<target>`, `<filename>`, `<type>`, `<source>`, `<size>`)</td><td><$edit-text tiddler="$:/config/rimir/drop-attach/title-filter" tag="input" class="rr-input" style="width:100%"/></td></tr>
-<tr><td>Append a view of the attachment to the end of the tiddler it was dropped on (a transclusion)</td><td><$checkbox tiddler="$:/config/rimir/drop-attach/append" field="text" checked="yes" unchecked="no" default="yes"> append</$checkbox></td></tr>
+<tr><td>Append a view of the attachment to the end of the tiddler it was dropped on (an `<<attachment>>` card)</td><td><$checkbox tiddler="$:/config/rimir/drop-attach/append" field="text" checked="yes" unchecked="no" default="yes"> append</$checkbox></td></tr>
 <tr><td>Size limit per file (MB)</td><td><$edit-text tiddler="$:/config/rimir/drop-attach/max-size" tag="input" class="rr-input" style="width:80px"/></td></tr>
 <tr><td>Name of pasted files (filter; `<ext>`, `<type>`)</td><td><$edit-text tiddler="$:/config/rimir/drop-attach/paste-name" tag="input" class="rr-input" style="width:100%"/></td></tr>
 </table>

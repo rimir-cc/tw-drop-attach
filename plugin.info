@@ -3,7 +3,7 @@
     "description": "Drop or paste binary files onto a tiddler: stored in the wiki as base64, linked by configurable actions",
     "name": "drop attach",
     "author": "rimir",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "core-version": ">=5.4.0",
     "source": "https://github.com/rimir-cc/tw-drop-attach",
     "plugin-type": "plugin",
